@@ -1,0 +1,727 @@
+{
+	"openapi": "3.0.0",
+	"info": {
+		"version": "1.0.0",
+		"title": "Blog API",
+		"description": "Yet Another API to create blog with auth from Powercode Academy by Kirill Bychkov",
+		"license": {
+			"name": "PowercodeAcademy",
+			"url": "https://powercode.academy"
+		}
+	},
+	"components": {
+		"securitySchemes": {
+			"bearerAuth": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT"
+			}
+		},
+		"schemas": {
+			"User": {
+				"type": "object",
+				"$ref": "#/definitions/UserGet"
+			},
+			"Post": {
+				"type": "object",
+				"$ref": "#/definitions/PostGet"
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "http://localhost:3001/api/v1"
+		},
+		{
+			"url": "http://10.6.199.207:3001/api/v1"
+		}
+	],
+	"tags": [
+		{
+			"name": "Auth",
+			"description": "API for auth in the system"
+		},
+		{
+			"name": "Users",
+			"description": "API for users in the system"
+		},
+		{
+			"name": "Posts",
+			"description": "API for posts in the system"
+		}
+	],
+	"schemes": ["http"],
+	"consumes": ["application/json", "multipart/form-data"],
+	"produces": ["application/json"],
+	"paths": {
+		"/auth": {
+			"post": {
+				"tags": ["Auth"],
+				"summary": "Get auth token for user in system",
+				"requestBody": {
+					"description": "User which we want to create",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/definitions/Login"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Your token is created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/Token"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/Error"
+								}
+							}
+						}
+					}
+				}
+            }
+        },
+        "/auth/user": {
+			"get": {
+				"tags": ["Auth"],
+                "summary": "Get your current auth user by token",
+				"security": [{ "bearerAuth": [] }],
+				"responses": {
+					"200": {
+						"description": "Here is user which you want to find",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/UserGet"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/Error"
+								}
+							}
+						}
+					}
+				}
+            }
+		},
+		"/users": {
+			"post": {
+				"tags": ["Users"],
+				"summary": "Create new user in system",
+				"requestBody": {
+					"description": "User that we want to create",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/definitions/User"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "New user is created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/UserGet"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"tags": ["Users"],
+				"summary": "Get all users in system",
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"description": "OK",
+								"schema": {
+									"$ref": "#/definitions/UserArray"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users/{userId}": {
+			"parameters": [
+				{
+					"in": "path",
+					"name": "userId",
+					"required": true,
+					"description": "ID of user that we want to find",
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
+			"get": {
+				"tags": ["Users"],
+				"summary": "Get user with given ID",
+				"responses": {
+					"200": {
+						"description": "Here is user which you want to find",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/UserGet"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"summary": "Delete user with given ID",
+				"security": [{ "bearerAuth": [] }],
+				"tags": ["Users"],
+				"responses": {
+					"200": {
+                        "description": "Successfully deleted",
+                        "content": {
+							"application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/Success"
+                                }
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"patch": {
+				"summary": "Update user with give ID",
+				"security": [{ "bearerAuth": [] }],
+				"tags": ["Users"],
+				"requestBody": {
+					"description": "User data that we want to update",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/definitions/UserEdit"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "User is updated",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/UserGet"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users/upload/{userId}": {
+			"parameters": [
+				{
+					"name": "userId",
+					"in": "path",
+					"required": true,
+					"description": "ID of user that we want to find",
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
+			"put": {
+				"summary": "Update user avatar with give ID",
+				"security": [{ "bearerAuth": [] }],
+				"consumes": [""],
+				"tags": ["Users"],
+				"requestBody": {
+					"description": "Attach your image",
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"avatar": {
+										"type": "file",
+										"required": true,
+										"format": "binary",
+										"description": "User avatar"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "User image is updated",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/UserGet"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/posts": {
+			"post": {
+				"tags": ["Posts"],
+				"security": [{ "bearerAuth": [] }],
+				"summary": "Create new post in system",
+				"requestBody": {
+					"description": "Post that we want to create",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/definitions/Post"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "New post is created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/PostGet"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"tags": ["Posts"],
+				"summary": "Get all posts in system",
+				"parameters": [
+					{
+						"name": "postedBy",
+						"in": "query",
+						"description": "ID of the user who posted the post",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+                        "description": "OK",
+                        "content": {
+							"application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/PostArray"
+                                }
+                            }
+                        }
+                    },
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/posts/{postId}": {
+			"parameters": [
+				{
+					"name": "postId",
+					"in": "path",
+					"required": true,
+					"description": "ID of post that we want to find",
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
+			"get": {
+				"tags": ["Posts"],
+				"summary": "Get posts with given ID",
+				"responses": {
+					"200": {
+                        "description": "Posts is found",
+                        "content": {
+							"application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/PostGet"
+                                }
+                            }
+                        }
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"summary": "Delete post with given ID",
+				"tags": ["Posts"],
+				"security": [{ "bearerAuth": [] }],
+				"responses": {
+					"200": {
+						"description": "Post is deleted",
+						"content": {
+							"application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/Success"
+                                }
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"patch": {
+				"tags": ["Posts"],
+				"security": [{ "bearerAuth": [] }],
+				"summary": "Update post with give ID",
+				"requestBody": {
+					"description": "Post with new values of properties",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/definitions/Post"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Post is updated",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/PostGet"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/posts/upload/{postId}": {
+			"parameters": [
+				{
+					"name": "postId",
+					"in": "path",
+					"required": true,
+					"description": "ID of post that we want to find",
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
+			"put": {
+				"summary": "Update post image with give ID",
+				"security": [{ "bearerAuth": [] }],
+				"consumes": [""],
+				"tags": ["Posts"],
+				"requestBody": {
+					"description": "Attach your image",
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"image": {
+										"type": "file",
+										"required": true,
+										"format": "binary",
+										"description": "Post image"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Post image is updated",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/PostGet"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/definitions/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"definitions": {
+		"PostGet": {
+			"properties": {
+				"_id": {
+					"type": "string"
+				},
+				"title": {
+					"type": "string"
+				},
+				"fullText": {
+					"type": "string"
+				},
+				"description": {
+					"type": "string"
+				},
+				"dateCreated": {
+					"type": "string"
+				},
+				"image": {
+					"type": "string"
+				},
+				"postedBy": {
+					"type": "string"
+				}
+			}
+		},
+		"UserGet": {
+			"properties": {
+				"_id": {
+					"type": "string"
+				},
+				"email": {
+					"type": "string"
+				},
+				"name": {
+					"type": "string"
+                },
+                "avatar": {
+					"type": "string"
+                },
+				"dateCreated": {
+					"type": "string"
+				}
+			}
+        },
+        "UserArray": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/UserGet"
+            }
+        },        
+        "PostArray": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/PostGet"
+            }
+        },
+		"Post": {
+			"required": ["title", "fullText"],
+			"properties": {
+				"title": {
+					"type": "string",
+					"uniqueItems": true
+				},
+				"fullText": {
+					"type": "string"
+				},
+				"description": {
+					"type": "string"
+				}
+			}
+		},
+		"User": {
+			"required": ["email", "password"],
+			"properties": {
+				"email": {
+					"type": "string",
+					"uniqueItems": true
+				},
+				"password": {
+					"type": "string"
+				},
+				"name": {
+					"type": "string"
+				}
+			}
+        },
+        "UserEdit": {
+            "required": ["name"],
+            "properties": {
+				"name": {
+					"type": "string"
+				}
+			}
+        },
+		"Login": {
+			"required": ["email", "password"],
+			"properties": {
+				"email": {
+					"type": "string",
+					"uniqueItems": true
+				},
+				"password": {
+					"type": "string"
+				}
+			}
+		},
+		"Token": {
+			"required": ["token"],
+			"properties": {
+				"token": {
+					"type": "string"
+				}
+			}
+		},
+		"Error": {
+			"required": ["error"],
+			"properties": {
+				"error": {
+					"type": "string"
+				}
+			}
+        },
+        "Success": {
+            "required": ["error"],
+            "properties": {
+				"message": {
+					"type": "string"
+				}
+			}
+        }
+	}
+}
