@@ -157,7 +157,7 @@ const Pagination = ({
             );
           }
           return (
-            <LiPager>
+            <LiPager key={index}>
               <ButtonPage
                 onClick={() => onChangeCurrentPage(page)}
                 isActive={

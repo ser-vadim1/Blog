@@ -18,8 +18,12 @@ export const CreateUser = createAsyncThunk("Registration/CreateUser", async (Bod
    return { dataUser: ResAuthorization.data, dataToken:  ResAuthToken.data.token}
   } catch (error) {
    const { response } = error;
-   console.log(response);
-   return rejectWithValue(response.data.error[0].message)
+   if(response.data.error.code === 11000){
+    return  rejectWithValue("dublicate name")
+   }else{
+      return rejectWithValue(response.data.error[0].message)
+
+   }
   }
 
 })
