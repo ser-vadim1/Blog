@@ -19,6 +19,8 @@ const PushPages = ( totalCards, CardsPerPage) =>{
 
 export const GetAllUsers = createAsyncThunk("seeAllUsers/GetAllUsers", async (skipUsers, {rejectWithValue, getState})=>{
    try {
+
+      
       let resGetAllUser = await generalRouter.get(`${ENDPOINT_USER}/?skipUsers=${skipUsers}`)
       return resGetAllUser.data
    } catch (error) {

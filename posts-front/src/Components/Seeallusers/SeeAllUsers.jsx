@@ -12,28 +12,31 @@ import { useStylesSeeAllUsers } from "./useStylesSeeAllUsers";
 import { DOM_NAME } from "../../Helper/api";
 import Pagination from "../pagination/Pagination";
 import { Link } from "react-router-dom";
-
+import { useGetParametr } from "../../Hooks/useGetParametr";
 const SeeAllUsers = () => {
   const Dispatch = useDispatch();
   const classes = useStylesSeeAllUsers();
   const Allusers = useSelector((state) => state.AllUsers.allUsers);
   const User = useSelector((state) => state.Auth.user);
+  const pageParams = useGetParametr("page") || 1;
   const ItemsPerPage = useSelector((state) => state.AllUsers.ItemsPerPage);
   const TotalPages = useSelector((state) => state.AllUsers.totalPages);
   const TotalItems = useSelector((state) => state.AllUsers.totalItems);
 
   useEffect(() => {
-    Dispatch(GetAllUsers(0));
-  }, [Dispatch]);
+    let SkipDoc = Number(pageParams) * ItemsPerPage - ItemsPerPage;
+    Dispatch(GetAllUsers(SkipDoc));
+    window.scrollTo(0, 0);
+  }, [Dispatch, pageParams, ItemsPerPage]);
 
-  const handlerFetchItems = useCallback(
-    async (SkipDoc) => {
-      let resultAction = await Dispatch(GetAllUsers(SkipDoc));
-      window.scrollTo(0, 0);
-      return resultAction;
-    },
-    [Dispatch]
-  );
+  // const handlerFetchItems = useCallback(
+  //   async (SkipDoc) => {
+  //     let resultAction = await Dispatch(GetAllUsers(SkipDoc));
+  //     window.scrollTo(0, 0);
+  //     return resultAction;
+  //   },
+  //   [Dispatch]
+  // );
 
   return (
     <>
@@ -82,11 +85,9 @@ const SeeAllUsers = () => {
           <Pagination
             toShowPagesAtOnce={5}
             TotalPages={TotalPages}
-            handlerFetchItems={handlerFetchItems}
+            // handlerFetchItems={handlerFetchItems}
             ItemsPerPage={ItemsPerPage}
             totalCards={TotalItems}
-            // itemWasCreated={itemWasCreated}
-            // itemWasDeleted={itemWasDeleted}
             pageNeighbours={2}
           />
         </div>

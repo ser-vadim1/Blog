@@ -20,6 +20,7 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 import { useStylesMyPosts } from "./useStylesMyPosts";
 import EditIcon from "@material-ui/icons/Edit";
+import { useGetParametr } from "../../Hooks/useGetParametr";
 const MyPosts = () => {
   const classes = useStylesMyPosts();
   const user = useSelector((state) => state.Auth.user);
@@ -28,20 +29,12 @@ const MyPosts = () => {
   const ItemsPerPage = useSelector((state) => state.Posts.ItemsPerPage);
   const TotalPages = useSelector((state) => state.Posts.totalPages);
   const TotalItems = useSelector((state) => state.Posts.totalItems);
-
-  const handlerFetchItems = useCallback(
-    async (SkipDoc) => {
-      let resultAction = await Dispatch(
-        GetPostsById({ ID: user._id, skip: SkipDoc })
-      );
-      return resultAction;
-    },
-    [Dispatch]
-  );
+  const pageParams = useGetParametr("page") || 1;
 
   useEffect(() => {
-    Dispatch(GetPostsById({ ID: user._id, skip: 0 }));
-  }, [Dispatch, user]);
+    let SkipDoc = Number(pageParams) * ItemsPerPage - ItemsPerPage;
+    Dispatch(GetPostsById({ ID: user._id, skip: SkipDoc }));
+  }, [Dispatch, user, pageParams, ItemsPerPage]);
   return (
     <>
       <Grid container className={classes.root} spacing={2}>
@@ -125,7 +118,6 @@ const MyPosts = () => {
             <Pagination
               toShowPagesAtOnce={5}
               TotalPages={TotalPages}
-              handlerFetchItems={handlerFetchItems}
               ItemsPerPage={ItemsPerPage}
               totalCards={TotalItems}
               pageNeighbours={2}

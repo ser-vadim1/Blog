@@ -14,16 +14,15 @@ import Typography from "@material-ui/core/Typography";
 import clsx from "clsx";
 import { Link, useRouteMatch } from "react-router-dom";
 const SearchInput = () => {
-  const classes = useStylesSearchInput();
   const [valueSearch, setValueSearch] = useState("");
   const debouncedValue = useDebounce(valueSearch, 500);
   const Dispatch = useDispatch();
   const { isExact } = useRouteMatch("/");
   const serchedPosts = useSelector((state) => state.Posts.serchedPosts);
+  const classes = useStylesSearchInput({
+    size: serchedPosts.length > 10 ? "350px" : "auto",
+  });
   const [isOpenBoardSearch, setIspenBoardSearch] = useState(false);
-  const [overflow, setOverflow] = useState(
-    serchedPosts.length > 10 ? true : false
-  );
 
   const _onChange = (e) => {
     setValueSearch(e.target.value);

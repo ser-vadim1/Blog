@@ -20,30 +20,24 @@ inputInput:{
 
    textIndent: '5px',
 },
-ContainerResulSearched: {
-// display: "none",
+ContainerResulSearched: props =>({
 position: "absolute",
 width: "170%",
 backgroundColor: "white",
 fontSize: "1.2em",
 overflowY: "scroll",
-height: "450px",
-// transform: 'translate(50%, 50%)',
+height: props.size,
 top: '100%',
 right: '0px',
 border: '1px solid black',
-},
+}),
+
+
 openBoard:{
    display: "block"
 },
 closeBoard:{
    display: 'none'
 },
-overflow:{
-   height: "350px",
-   overflowY: "scroll",
-}, 
-NoOverflow:{
-   height: "auto"
-}
+
 }))

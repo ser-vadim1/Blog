@@ -28,19 +28,21 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import { Link } from "react-router-dom";
 import { ENDPOINT_USER, generalRouter } from "../../Helper/api";
+import { useGetParametr } from "../../Hooks/useGetParametr";
+import { usePrevious } from "../../Hooks/usePrevious";
 import { GetUserById } from "../../Redux/AllUsers";
 const SeeAllPosts = () => {
   const classes = useStylesSeeAllPosts();
-  const [expanded, setExpanded] = useState(false);
-  const [allPosts, setAllPosts] = useState([]);
   const Dispatch = useDispatch();
   const ItemsPerPage = useSelector((state) => state.Posts.ItemsPerPage);
   const TotalPages = useSelector((state) => state.Posts.totalPages);
   const TotalItems = useSelector((state) => state.Posts.totalItems);
+  const pageParams = useGetParametr("page") || 1;
   const _Posts = useSelector((state) => state.Posts.posts);
   const [sortBy, setSortBy] = React.useState("");
   const [users, setusers] = useState([]);
   const [isSorted, setIsSorted] = useState(false);
+
   const handlerFetchItems = useCallback(
     async (SkipDoc) => {
       let resultAction = await Dispatch(
@@ -53,16 +55,11 @@ const SeeAllPosts = () => {
   );
   useEffect(() => {
     let _AllPost = async () => {
-      let resultAction = await Dispatch(
-        GetAllPosts({ skiPost: 0, valueSort: sortBy })
-      );
-      if (resultAction.meta.requestStatus === "fulfilled") {
-        setIsSorted(false);
-      }
+      let SkipDoc = Number(pageParams) * ItemsPerPage - ItemsPerPage;
+      Dispatch(GetAllPosts({ skiPost: SkipDoc, valueSort: sortBy }));
     };
-
     _AllPost();
-  }, [Dispatch, sortBy]);
+  }, [Dispatch, sortBy, pageParams, ItemsPerPage]);
 
   useEffect(() => {
     let usersArr = [];
@@ -75,11 +72,10 @@ const SeeAllPosts = () => {
     };
 
     getusers();
-  }, [allPosts, Dispatch, _Posts]);
+  }, [Dispatch, _Posts]);
 
   const getAvatar = (userId) => {
     let user = users.find((u) => u._id === userId);
-
     return user?.avatar || null;
   };
 
@@ -101,7 +97,13 @@ const SeeAllPosts = () => {
           <MenuItem value="">
             <em>None</em>
           </MenuItem>
-          <MenuItem value={1}>sort by date</MenuItem>
+          <MenuItem
+            value={1}
+            // component={Link}
+            // to={{ search: `?isSorted=${sortBy}` }}
+          >
+            sort by date
+          </MenuItem>
         </Select>
         <FormHelperText>Choose method sort</FormHelperText>
       </FormControl>
@@ -173,11 +175,7 @@ const SeeAllPosts = () => {
                       <ShareIcon />
                     </IconButton>
                   </CardActions>
-                  <Collapse
-                    in={expanded}
-                    timeout="auto"
-                    unmountOnExit
-                  ></Collapse>
+                  <Collapse timeout="auto" unmountOnExit></Collapse>
                 </Card>
               </Grid>
             );
@@ -192,7 +190,7 @@ const SeeAllPosts = () => {
               isSorted={isSorted}
               toShowPagesAtOnce={5}
               TotalPages={TotalPages}
-              handlerFetchItems={handlerFetchItems}
+              // handlerFetchItems={handlerFetchItems}
               ItemsPerPage={ItemsPerPage}
               totalCards={TotalItems}
               pageNeighbours={2}

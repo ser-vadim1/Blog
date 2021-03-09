@@ -16,21 +16,18 @@ const Pagination = ({
 }) => {
   const Dispatch = useDispatch();
   const [DisablePages, SetDisablePages] = useState([]);
-  const location = useLocation();
-  const history = useHistory();
-  const pageParams = useGetParametr("page") || 1;
-  const CurrenPageRef = useRef(1);
-  const prevCurrentPage = usePrevious(CurrenPageRef.current);
+  let pageParams = useGetParametr("page") || 1;
+
+  const CurrenPageRef = useRef(Number(pageParams));
+  const prevCurrentPage = usePrevious(Number(pageParams));
+
   useEffect(() => {
     if (TotalPages.length >= 1) {
-      if (isSorted) {
-        CurrenPageRef.current = 1;
-      }
-      onChangeCurrentPage(CurrenPageRef.current, isSorted);
+      onChangeCurrentPage(Number(pageParams), isSorted);
     } else {
       SetDisablePages([]);
     }
-  }, [TotalPages]);
+  }, [TotalPages, isSorted, pageParams]);
 
   const range = (from, to, step = 1) => {
     let i = from;
@@ -51,12 +48,6 @@ const Pagination = ({
       itemWasCreated || (CurrenPageRef.current > lastOnePage && itemWasDeleted)
         ? lastOnePage
         : page;
-
-    if (page === "...") {
-      CurrenPageRef.current = prevCurrentPage;
-    }
-    page = CurrenPageRef.current;
-
     // Определяем страницы после первого разрыва и до последнего
     let startPage = CurrenPageRef.current - pageNeighbours;
     let endPage = CurrenPageRef.current + pageNeighbours;
@@ -67,12 +58,18 @@ const Pagination = ({
         ? lastOnePage - (toShowPagesAtOnce - 2)
         : lastOnePage - (toShowPagesAtOnce - 1);
 
+    if (page === "...") {
+      CurrenPageRef.current = Number(pageParams);
+      console.log("xxx");
+    }
     if (
       page >= toShowPagesAtOnce &&
       page !== lastOnePage &&
       page <= breakLastPage &&
       lastOnePage >= toShowPagesAtOnce + 1
     ) {
+      console.log("onChange 1");
+
       let extraPages = range(startPage, endPage);
       SetDisablePages([
         "LEFT_PAGE",
@@ -83,11 +80,11 @@ const Pagination = ({
         lastOnePage,
         "RIGHT_PAGE",
       ]);
-      // console.log("OnchangePage 1");
     } else if (
       page < toShowPagesAtOnce &&
       lastOnePage >= toShowPagesAtOnce + 1
     ) {
+      console.log("onChange 2");
       let extraPages = range(1, toShowPagesAtOnce);
       SetDisablePages([
         "LEFT_PAGE",
@@ -101,35 +98,25 @@ const Pagination = ({
       (page === lastOnePage && lastOnePage >= toShowPagesAtOnce + 1) ||
       (page >= breakLastPage + 1 && lastOnePage >= toShowPagesAtOnce + 1)
     ) {
+      console.log("onChange 3");
       let extraPage = range(lastOnePage - (toShowPagesAtOnce - 1), lastOnePage);
       SetDisablePages(["LEFT_PAGE", 1, "...", ...extraPage, "RIGHT_PAGE"]);
       // console.log("OnchangePage 3", extraPage);
-    } else if (lastOnePage >= 1) {
+    } else if (lastOnePage < toShowPagesAtOnce) {
+      console.log("onChange 4");
       let extraPages = range(1, lastOnePage);
       SetDisablePages(["LEFT_PAGE", ...extraPages, "RIGHT_PAGE"]);
-    }
-
-    let SkipDoc = CurrenPageRef.current * ItemsPerPage - ItemsPerPage;
-    // ЗАпрезщаем повторять запрос если находимся  на одной и тойже страницы
-    if (prevCurrentPage !== page) {
-      handlerFetchItems(SkipDoc);
     }
   };
 
   const Left_page = () => {
-    CurrenPageRef.current =
-      CurrenPageRef.current === 1 ? 1 : CurrenPageRef.current - 1;
-    let Page = CurrenPageRef.current;
-    onChangeCurrentPage(Page);
+    let page = Number(pageParams);
+    onChangeCurrentPage(page);
   };
 
   const Right_page = () => {
-    CurrenPageRef.current =
-      CurrenPageRef.current === TotalPages.length
-        ? TotalPages.length
-        : CurrenPageRef.current + 1;
-    let Page = CurrenPageRef.current;
-    onChangeCurrentPage(Page);
+    let page = Number(pageParams);
+    onChangeCurrentPage(page);
   };
   return (
     <>
@@ -137,36 +124,58 @@ const Pagination = ({
         {DisablePages.map((page, index) => {
           if (page === "LEFT_PAGE") {
             return (
-              <LiPager key={index}>
-                <ButtonPage
-                  disabled={0}
-                  onClick={() => Left_page(CurrenPageRef.current)}
-                >
-                  Prev
-                </ButtonPage>
-              </LiPager>
+              <Link
+                key={index}
+                to={{
+                  search: `?page=${
+                    CurrenPageRef.current === 1 ? 1 : CurrenPageRef.current - 1
+                  }`,
+                }}
+              >
+                <LiPager>
+                  <ButtonPage disabled={0} onClick={() => Left_page()}>
+                    Prev
+                  </ButtonPage>
+                </LiPager>
+              </Link>
             );
           }
           if (page === "RIGHT_PAGE") {
             return (
-              <LiPager key={index}>
-                <ButtonPage disabled={0} onClick={() => Right_page()}>
-                  Next
-                </ButtonPage>
-              </LiPager>
+              <Link
+                key={index}
+                to={{
+                  search: `?page=${
+                    CurrenPageRef.current === TotalPages.length
+                      ? TotalPages.length
+                      : CurrenPageRef.current + 1
+                  }`,
+                }}
+              >
+                <LiPager>
+                  <ButtonPage disabled={0} onClick={() => Right_page()}>
+                    Next
+                  </ButtonPage>
+                </LiPager>
+              </Link>
             );
           }
           return (
-            <LiPager key={index}>
-              <ButtonPage
-                onClick={() => onChangeCurrentPage(page)}
-                isActive={
-                  page === CurrenPageRef.current && page !== "..." ? 1 : 0
-                }
-              >
-                {page}
-              </ButtonPage>
-            </LiPager>
+            <Link
+              key={index}
+              to={{ search: `?page=${page === "..." ? pageParams : page}` }}
+            >
+              <LiPager>
+                <ButtonPage
+                  onClick={() => onChangeCurrentPage(page)}
+                  isActive={
+                    page === CurrenPageRef.current && page !== "..." ? 1 : 0
+                  }
+                >
+                  {page}
+                </ButtonPage>
+              </LiPager>
+            </Link>
           );
         })}
       </UlPager>

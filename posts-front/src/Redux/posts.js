@@ -89,6 +89,7 @@ export const  uploadImage = createAsyncThunk("Posts/uploadImage",  async({File, 
 
 export const GetAllPosts = createAsyncThunk("Posts/GetAllPosts", async({skiPost,valueSort})=>{
    try {
+      
       let resGetAllposts = await generalRouter.get(`${ENDPOINT_POSTS}/?skipPosts=${skiPost}&&valueSort=${valueSort}`)
 
       return resGetAllposts.data
