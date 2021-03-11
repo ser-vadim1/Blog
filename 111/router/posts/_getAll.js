@@ -4,6 +4,9 @@ const getAllPosts = async (req, res, next) => {
 	let query = {}
 	let {valueSort} = req.query
 
+
+	
+
 	try {
 	
 		req.query.postedBy && (query.postedBy = req.query.postedBy)
