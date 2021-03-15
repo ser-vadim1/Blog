@@ -16,7 +16,6 @@ const SeeOnePost = () => {
 
   useEffect(() => {
     let seen = [];
-
     if (lastSeenPost && lastSeenPost.length < 4) {
       lastSeenPost.push(postId);
       localStorage.setItem("lastSeen", JSON.stringify(lastSeenPost));
@@ -42,16 +41,15 @@ const SeeOnePost = () => {
       if (resultAction.meta.requestStatus === "fulfilled") {
         let _onePost = resultAction.payload;
         setOnePost({
-          title: postId ? _onePost.title : "",
-          fullText: postId ? _onePost.fullText : "",
-          description: postId ? _onePost.description : "",
+          title: _onePost.title,
+          fullText: _onePost.fullText,
+          description: _onePost.description,
           image: _onePost.image,
         });
       }
     };
     if (postId) {
       _onePost();
-      console.log(onePost);
     }
   }, [postId, Dispatch]);
   return (

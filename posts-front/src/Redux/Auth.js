@@ -123,11 +123,7 @@ export const RegistrationSlice = createSlice({
       [SignIn.fulfilled]: (state, action) =>{
          state.isAuth = true
          state.user = action.payload.user
-         console.log('sign in fulfiled', action);
          
-      },
-      [SignIn.rejected]: (state, action) =>{
-         console.log('sign in rejected', action);
       },
       [GetUser.fulfilled]: (state, action) =>{
          state.isAuth = true
@@ -138,7 +134,6 @@ export const RegistrationSlice = createSlice({
          state.user = ""
          state.isAuth = false
          localStorage.removeItem("AccessToken")
-         // console.log('get user rejected', action);
       },
        [UpdateUserName.fulfilled]: (state, action)=>{
           state.user = action.payload
