@@ -15,37 +15,34 @@ const SeeOnePost = () => {
   const lastSeenPost = JSON.parse(localStorage.getItem("lastSeen"));
 
   useEffect(() => {
-    let seen = [];
-    if (lastSeenPost && lastSeenPost.length < 4) {
-      lastSeenPost.push(postId);
-      localStorage.setItem("lastSeen", JSON.stringify(lastSeenPost));
-    } else if (lastSeenPost && lastSeenPost.length >= 4) {
-      let indexCount = +localStorage.getItem("indexCount");
-      lastSeenPost.splice(indexCount, 1, postId);
-      indexCount += 1;
-      if (indexCount > 3) {
-        indexCount = 0;
+    let addIdToLastSeen = () => {
+      if (!lastSeenPost) {
+        let seenSet = new Set([postId]);
+        localStorage.setItem("lastSeen", JSON.stringify([...seenSet]));
+        localStorage.setItem("indexCount", 0);
+      } else if (lastSeenPost.length <= 4) {
+        lastSeenPost.push(postId);
+        let seenSet = new Set(lastSeenPost);
+        localStorage.setItem("lastSeen", JSON.stringify([...seenSet]));
+      } else if (lastSeenPost.length >= 4) {
+        console.log("plus index");
+        let indexCount = +localStorage.getItem("indexCount");
+        lastSeenPost.splice(indexCount, 1, postId);
+        indexCount = indexCount >= 3 ? 0 : indexCount + 1;
+        let seenSet = new Set(lastSeenPost);
+        localStorage.setItem("indexCount", indexCount);
+        localStorage.setItem("lastSeen", JSON.stringify([...seenSet]));
       }
-      localStorage.setItem("indexCount", indexCount);
-      localStorage.setItem("lastSeen", JSON.stringify(lastSeenPost));
-    } else if (!lastSeenPost) {
-      seen.push(postId);
-      localStorage.setItem("lastSeen", JSON.stringify(seen));
-      localStorage.setItem("indexCount", 0);
-    }
-  }, []);
+    };
+    addIdToLastSeen();
+  }, [lastSeenPost, postId]);
 
   useEffect(() => {
     let _onePost = async () => {
       let resultAction = await Dispatch(GetOnePostById(postId));
       if (resultAction.meta.requestStatus === "fulfilled") {
         let _onePost = resultAction.payload;
-        setOnePost({
-          title: _onePost.title,
-          fullText: _onePost.fullText,
-          description: _onePost.description,
-          image: _onePost.image,
-        });
+        setOnePost({ ..._onePost });
       }
     };
     if (postId) {
@@ -93,3 +90,21 @@ const SeeOnePost = () => {
 };
 
 export default SeeOnePost;
+
+// if (lastSeenPost && lastSeenPost.length < 4) {
+//   lastSeenPost.push(postId);
+//   localStorage.setItem("lastSeen", JSON.stringify(lastSeenPost));
+// } else if (lastSeenPost && lastSeenPost.length >= 4) {
+//   let indexCount = +localStorage.getItem("indexCount");
+//   lastSeenPost.splice(indexCount, 1, postId);
+//   indexCount += 1;
+//   if (indexCount > 3) {
+//     indexCount = 0;
+//   }
+//   localStorage.setItem("indexCount", indexCount);
+//   localStorage.setItem("lastSeen", JSON.stringify(lastSeenPost));
+// } else if (!lastSeenPost) {
+//   seen.push(postId);
+//   localStorage.setItem("lastSeen", JSON.stringify(seen));
+//   localStorage.setItem("indexCount", 0);
+// }

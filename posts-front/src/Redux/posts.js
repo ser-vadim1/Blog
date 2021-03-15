@@ -146,7 +146,6 @@ export const PostsSlice = createSlice({
          console.log('rejected GetOnePostById', action);
       },
       [GetOnePostById.fulfilled]: (state, action)=>{
-         console.log('fulfilled', action);
          
       },
       [GetOnePostById.rejected]: (state, action)=>{

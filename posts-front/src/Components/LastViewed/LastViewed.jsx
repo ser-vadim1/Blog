@@ -25,14 +25,15 @@ const LastViewed = () => {
   const [lastViewed, setLastViewed] = useState([]);
   const LocalLastViewd = JSON.parse(localStorage.getItem("lastSeen"));
   useEffect(() => {
-    let newLast = [];
     async function processArray() {
       let newLast = [];
-      for (const item of LocalLastViewd) {
-        let res = await generalRouter.get(`${ENDPOINT_POSTS}/${item}`);
-        newLast.push(res.data);
+      if (LocalLastViewd) {
+        for (const idPost of LocalLastViewd) {
+          let res = await generalRouter.get(`${ENDPOINT_POSTS}/${idPost}`);
+          newLast.push(res.data);
+        }
+        setLastViewed(newLast);
       }
-      setLastViewed(newLast);
     }
     processArray();
   }, [Dispatch]);

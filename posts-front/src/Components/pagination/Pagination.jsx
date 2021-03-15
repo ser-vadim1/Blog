@@ -84,7 +84,6 @@ const Pagination = ({
       page < toShowPagesAtOnce &&
       lastOnePage >= toShowPagesAtOnce + 1
     ) {
-      console.log("onChange 2");
       let extraPages = range(1, toShowPagesAtOnce);
       SetDisablePages([
         "LEFT_PAGE",
